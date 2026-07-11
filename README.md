@@ -1,2 +1,0 @@
-# termoapp
-repositorio app termo
