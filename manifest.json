@@ -1,6 +1,6 @@
 {
-  "name": "ThermoLab",
-  "short_name": "ThermoLab",
+  "name": "Thermochem",
+  "short_name": "Thermochem",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#ffffff",
