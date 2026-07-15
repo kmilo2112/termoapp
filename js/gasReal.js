@@ -1,20 +1,9 @@
-console.log("gasReal.js cargado");
+console.log("gasReal.js cargado correctamente");
 
 //====================================================
-// GAS REAL
-//====================================================
-//
-// Modelos implementados:
-// 1. Van der Waals
-// 2. Ecuación Virial
-// 3. Factor de Compresibilidad
-//
+// GAS REAL (MÓDULO PRINCIPAL)
 //====================================================
 
-
-//====================================================
-// MENÚ GAS REAL
-//====================================================
 function gasReal() {
     contenido.innerHTML = `
     <h2>🧪 Gas Real</h2>
@@ -38,19 +27,22 @@ function gasReal() {
         </div>
     </div>
     <br>
-    <button onclick="inicio()">← Volver</button>
+    <button onclick="inicio()">← Volver al Menú Principal</button>
     `;
 }
 
+
 //====================================================
-// MENÚ VAN DER WAALS
+// 1. MÓDULO: VAN DER WAALS
 //====================================================
+
 function vanDerWaals() {
     contenido.innerHTML = `
     <h2>🧪 Van der Waals</h2>
     <hr>
-    <h2>(P + an²/V²)(V-nb)=nRT</h2>
-    <hr>
+    <div style="background: #f0f4f8; padding: 10px; border-radius: 8px; text-align: center; margin-bottom: 15px;">
+        <h3>(P + an²/V²)(V-nb) = nRT</h3>
+    </div>
     <p>Seleccione el cálculo que desea realizar.</p>
     <div class="lista">
         <div class="item" onclick="vdwPresion()">
@@ -70,18 +62,14 @@ function vanDerWaals() {
         </div>
     </div>
     <br>
-    <button onclick="gasReal()">← Volver</button>
+    <button onclick="gasReal()">← Volver a Gas Real</button>
     `;
 }
 
-//====================================================
-// VAN DER WAALS: CALCULAR PRESIÓN
-//====================================================
+// --- VDW: PRESIÓN ---
 function vdwPresion() {
     contenido.innerHTML = `
-    <h2>📌 Presión mediante Van der Waals</h2>
-    <hr>
-    <h2>P = nRT/(V-nb) − an²/V²</h2>
+    <h2>📌 Presión (Van der Waals)</h2>
     <hr>
     <label><b>Seleccione el gas</b></label>
     <select id="gas" onchange="mostrarConstantesVDW()">
@@ -93,14 +81,14 @@ function vdwPresion() {
     <br><br>
     <div id="panelConstantesVDW"></div>
     <hr>
-    <label><b>Moles (mol)</b></label>
-    <input id="n" type="number">
+    <label><b>Moles, n (mol)</b></label>
+    <input id="n" type="number" step="any">
     <br><br>
-    <label><b>Temperatura (K)</b></label>
-    <input id="T" type="number">
+    <label><b>Temperatura, T (K)</b></label>
+    <input id="T" type="number" step="any">
     <br><br>
-    <label><b>Volumen (m³)</b></label>
-    <input id="V" type="number">
+    <label><b>Volumen, V (m³)</b></label>
+    <input id="V" type="number" step="any">
     <br><br>
     <label><b>Unidad del resultado</b></label>
     <select id="unidadResultado">
@@ -111,7 +99,7 @@ function vdwPresion() {
         <option value="atm">atm</option>
     </select>
     <br><br>
-    <button onclick="resolverVdwPresion()">Calcular</button>
+    <button onclick="resolverVdwPresion()">Calcular Presión</button>
     <button onclick="vanDerWaals()">← Volver</button>
     <br><br>
     <div id="resultado"></div>
@@ -119,14 +107,11 @@ function vdwPresion() {
     mostrarConstantesVDW();
 }
 
-//====================================================
-// MOSTRAR CONSTANTES VAN DER WAALS
-//====================================================
 function mostrarConstantesVDW() {
     const gas = document.getElementById("gas").value;
     const panel = document.getElementById("panelConstantesVDW");
 
-    if (gas == "personalizado") {
+    if (gas === "personalizado") {
         panel.innerHTML = `
         <label><b>Constante a (Pa·m⁶/mol²)</b></label>
         <input id="a" type="number" step="any">
@@ -137,8 +122,8 @@ function mostrarConstantesVDW() {
     } else {
         const datos = GASES_REALES[gas];
         panel.innerHTML = `
-        <div style="background: #f0f4f8; padding: 10px; border-radius: 8px; border-left: 4px solid #3498db;">
-            <p style="margin:0;"><b>Constantes de la base de datos:</b></p>
+        <div style="background: #e8f4fd; padding: 10px; border-radius: 5px; border-left: 4px solid #3498db;">
+            <p style="margin:0;"><b>Constantes:</b></p>
             <p style="margin:5px 0 0 0;">a = ${datos.a} Pa·m⁶/mol²</p>
             <p style="margin:0;">b = ${datos.b} m³/mol</p>
         </div>
@@ -146,9 +131,6 @@ function mostrarConstantesVDW() {
     }
 }
 
-//====================================================
-// RESOLVER PRESIÓN VDW
-//====================================================
 function resolverVdwPresion() {
     const gas = document.getElementById("gas").value;
     let n = parseFloat(document.getElementById("n").value);
@@ -156,8 +138,6 @@ function resolverVdwPresion() {
     let V = parseFloat(document.getElementById("V").value);
     
     let a, b;
-
-    // Lógica para obtener 'a' y 'b' de forma segura
     if (gas === "personalizado") {
         a = parseFloat(document.getElementById("a").value);
         b = parseFloat(document.getElementById("b").value);
@@ -167,12 +147,12 @@ function resolverVdwPresion() {
     }
 
     if (isNaN(n) || isNaN(T) || isNaN(V) || isNaN(a) || isNaN(b)) {
-        alert("Ingrese todos los datos.");
+        alert("Por favor, ingrese todos los datos numéricos requeridos.");
         return;
     }
 
     if (V <= n * b) {
-        alert("El volumen debe ser mayor que el covolumen (n·b).");
+        alert("Error físico: El volumen total (V) debe ser mayor que el volumen ocupado por las moléculas (n·b).");
         return;
     }
 
@@ -183,17 +163,16 @@ function resolverVdwPresion() {
     const unidad = document.getElementById("unidadResultado").value;
     let resultado = P;
 
-    if (unidad == "kPa") resultado /= 1000;
-    else if (unidad == "MPa") resultado /= 1000000;
-    else if (unidad == "bar") resultado /= 100000;
-    else if (unidad == "atm") resultado /= 101325;
+    if (unidad === "kPa") resultado /= 1000;
+    else if (unidad === "MPa") resultado /= 1000000;
+    else if (unidad === "bar") resultado /= 100000;
+    else if (unidad === "atm") resultado /= 101325;
 
     document.getElementById("resultado").innerHTML = `
     <hr>
     <h2>Resultado</h2>
     <hr>
-    <p><b>Gas:</b> ${gas == "personalizado" ? "Personalizado" : GASES_REALES[gas].nombre}</p>
-    <hr>
+    <p><b>Gas:</b> ${gas === "personalizado" ? "Personalizado" : GASES_REALES[gas].nombre}</p>
     <p>Término Repulsivo: ${(termino1).toFixed(2)} Pa</p>
     <p>Término Atractivo: ${(termino2).toFixed(2)} Pa</p>
     <hr>
@@ -201,17 +180,13 @@ function resolverVdwPresion() {
     `;
 }
 
-//====================================================
-// VAN DER WAALS: CALCULAR TEMPERATURA
-//====================================================
+// --- VDW: TEMPERATURA ---
 function vdwTemperatura() {
     contenido.innerHTML = `
-    <h2>🌡️ Temperatura mediante Van der Waals</h2>
-    <hr>
-    <h2>T=((P+an²/V²)(V−nb))/(nR)</h2>
+    <h2>🌡️ Temperatura (Van der Waals)</h2>
     <hr>
     <label><b>Seleccione el gas</b></label>
-    <select id="gas" onchange="mostrarConstantesVDWTemperatura()">
+    <select id="gas" onchange="mostrarConstantesVDW()">
         <option value="aire">Aire</option>
         <option value="co2">CO₂</option>
         <option value="vaporAgua">Vapor de agua</option>
@@ -220,30 +195,23 @@ function vdwTemperatura() {
     <br><br>
     <div id="panelConstantesVDW"></div>
     <hr>
-    <label><b>Presión (Pa)</b></label>
-    <input id="P" type="number">
+    <label><b>Presión, P (Pa)</b></label>
+    <input id="P" type="number" step="any">
     <br><br>
-    <label><b>Moles (mol)</b></label>
-    <input id="n" type="number">
+    <label><b>Moles, n (mol)</b></label>
+    <input id="n" type="number" step="any">
     <br><br>
-    <label><b>Volumen (m³)</b></label>
-    <input id="V" type="number">
+    <label><b>Volumen, V (m³)</b></label>
+    <input id="V" type="number" step="any">
     <br><br>
-    <button onclick="resolverVdwTemperatura()">Calcular</button>
+    <button onclick="resolverVdwTemperatura()">Calcular Temperatura</button>
     <button onclick="vanDerWaals()">← Volver</button>
     <br><br>
     <div id="resultado"></div>
     `;
-    mostrarConstantesVDWTemperatura();
-}
-
-function mostrarConstantesVDWTemperatura() {
     mostrarConstantesVDW();
 }
 
-//====================================================
-// RESOLVER TEMPERATURA VDW
-//====================================================
 function resolverVdwTemperatura() {
     const gas = document.getElementById("gas").value;
     let P = parseFloat(document.getElementById("P").value);
@@ -251,7 +219,6 @@ function resolverVdwTemperatura() {
     let V = parseFloat(document.getElementById("V").value);
     
     let a, b;
-
     if (gas === "personalizado") {
         a = parseFloat(document.getElementById("a").value);
         b = parseFloat(document.getElementById("b").value);
@@ -261,12 +228,12 @@ function resolverVdwTemperatura() {
     }
 
     if (isNaN(P) || isNaN(n) || isNaN(V) || isNaN(a) || isNaN(b)) {
-        alert("Ingrese todos los datos.");
+        alert("Por favor, ingrese todos los datos numéricos requeridos.");
         return;
     }
 
     if (V <= n * b) {
-        alert("El volumen debe ser mayor que el covolumen (n·b).");
+        alert("Error físico: El volumen total (V) debe ser mayor que el volumen ocupado por las moléculas (n·b).");
         return;
     }
 
@@ -279,21 +246,17 @@ function resolverVdwTemperatura() {
     <hr>
     <h2>Resultado</h2>
     <hr>
-    <p><b>Gas:</b> ${gas == "personalizado" ? "Personalizado" : GASES_REALES[gas].nombre}</p>
+    <p><b>Gas:</b> ${gas === "personalizado" ? "Personalizado" : GASES_REALES[gas].nombre}</p>
     <hr>
-    <h2>T = ${T.toFixed(2)} K</h2>
-    <h2>T = ${Tc.toFixed(2)} °C</h2>
+    <h2>T = ${T.toFixed(3)} K</h2>
+    <h2>T = ${Tc.toFixed(3)} °C</h2>
     `;
 }
 
-//====================================================
-// VERIFICAR ECUACIÓN DE VAN DER WAALS
-//====================================================
+// --- VDW: VERIFICACIÓN ---
 function vdwVerificar() {
     contenido.innerHTML = `
-    <h2>✔ Verificar ecuación de Van der Waals</h2>
-    <hr>
-    <h2>(P + an²/V²)(V-nb)=nRT</h2>
+    <h2>✔ Verificar Ecuación de VDW</h2>
     <hr>
     <label><b>Seleccione el gas</b></label>
     <select id="gas" onchange="mostrarConstantesVDW()">
@@ -305,17 +268,17 @@ function vdwVerificar() {
     <br><br>
     <div id="panelConstantesVDW"></div>
     <hr>
-    <label><b>Presión (Pa)</b></label>
-    <input id="P" type="number">
+    <label><b>Presión, P (Pa)</b></label>
+    <input id="P" type="number" step="any">
     <br><br>
-    <label><b>Volumen (m³)</b></label>
-    <input id="V" type="number">
+    <label><b>Volumen, V (m³)</b></label>
+    <input id="V" type="number" step="any">
     <br><br>
-    <label><b>Temperatura (K)</b></label>
-    <input id="T" type="number">
+    <label><b>Temperatura, T (K)</b></label>
+    <input id="T" type="number" step="any">
     <br><br>
-    <label><b>Moles (mol)</b></label>
-    <input id="n" type="number">
+    <label><b>Moles, n (mol)</b></label>
+    <input id="n" type="number" step="any">
     <br><br>
     <button onclick="resolverVerificacionVDW()">Verificar</button>
     <button onclick="vanDerWaals()">← Volver</button>
@@ -325,9 +288,6 @@ function vdwVerificar() {
     mostrarConstantesVDW();
 }
 
-//====================================================
-// RESOLVER VERIFICACIÓN VDW
-//====================================================
 function resolverVerificacionVDW() {
     const gas = document.getElementById("gas").value;
     let P = parseFloat(document.getElementById("P").value);
@@ -336,7 +296,6 @@ function resolverVerificacionVDW() {
     let n = parseFloat(document.getElementById("n").value);
     
     let a, b;
-
     if (gas === "personalizado") {
         a = parseFloat(document.getElementById("a").value);
         b = parseFloat(document.getElementById("b").value);
@@ -346,7 +305,7 @@ function resolverVerificacionVDW() {
     }
 
     if (isNaN(P) || isNaN(V) || isNaN(T) || isNaN(n) || isNaN(a) || isNaN(b)) {
-        alert("Ingrese todos los datos.");
+        alert("Por favor, ingrese todos los datos numéricos requeridos.");
         return;
     }
 
@@ -354,55 +313,69 @@ function resolverVerificacionVDW() {
     const ladoDerecho = n * CONSTANTES.R.J * T;
     const error = Math.abs(ladoIzquierdo - ladoDerecho) / ladoDerecho * 100;
 
-    let mensaje = error < 0.01 ? "✅ La ecuación se satisface correctamente." : "⚠ Existe una diferencia entre ambos lados de la ecuación.";
+    let mensaje = error < 0.01 ? "✅ La ecuación se satisface correctamente (Error aceptable)." : "⚠ Existe una diferencia significativa entre ambos lados.";
 
     document.getElementById("resultado").innerHTML = `
     <hr>
-    <h2>Resultado</h2>
+    <h2>Validación de VDW</h2>
     <hr>
-    <p><b>Gas:</b> ${gas == "personalizado" ? "Personalizado" : GASES_REALES[gas].nombre}</p>
+    <p><b>Gas:</b> ${gas === "personalizado" ? "Personalizado" : GASES_REALES[gas].nombre}</p>
+    <p>Lado izquierdo: <b>${ladoIzquierdo.toFixed(2)} J</b></p>
+    <p>Lado derecho: <b>${ladoDerecho.toFixed(2)} J</b></p>
     <hr>
-    <p>Lado izquierdo: <b>${ladoIzquierdo.toFixed(2)}</b></p>
-    <p>Lado derecho: <b>${ladoDerecho.toFixed(2)}</b></p>
-    <p>Error: <b>${error.toFixed(4)} %</b></p>
-    <hr>
+    <p>Error Porcentual: <b>${error.toFixed(4)} %</b></p>
     <p>${mensaje}</p>
     `;
 }
 
+
 //====================================================
-// ECUACIÓN VIRIAL
+// 2. MÓDULO: ECUACIÓN VIRIAL
 //====================================================
+
 function virial() {
     contenido.innerHTML = `
     <h2>📈 Ecuación Virial</h2>
     <hr>
-    <h2>PV = ZnRT</h2>
+    <div style="background: #f0f4f8; padding: 10px; border-radius: 8px; text-align: center; margin-bottom: 15px;">
+        <h3>Z = 1 + B/Vm</h3>
+        <h3>PV = ZnRT</h3>
+    </div>
     <p>Seleccione la propiedad que desea calcular.</p>
     <div class="lista">
-        <div class="item" onclick="virialPresion()">📌 Presión</div>
-        <div class="item" onclick="virialTemperatura()">🌡 Temperatura</div>
-        <div class="item" onclick="virialValidacion()">✔ Validación</div>
+        <div class="item" onclick="virialPresion()">
+            📌 Presión
+            <br><small>Calcular P a partir de B</small>
+        </div>
+        <div class="item" onclick="virialTemperatura()">
+            🌡 Temperatura
+            <br><small>Calcular T a partir de B</small>
+        </div>
+        <div class="item" onclick="virialValidacion()">
+            ✔ Validación
+            <br><small>Verificar exactitud</small>
+        </div>
     </div>
     <br>
-    <button onclick="gasReal()">← Volver</button>
+    <button onclick="gasReal()">← Volver a Gas Real</button>
     `;
 }
 
+// --- VIRIAL: PRESIÓN ---
 function virialPresion() {
     contenido.innerHTML = `
-    <h2>📌 Presión mediante Virial</h2>
+    <h2>📌 Presión (Virial Truncada)</h2>
     <hr>
     <label><b>Coeficiente Virial B (m³/mol)</b></label>
     <input id="B" type="number" step="any">
     <br><br>
-    <label><b>Moles (mol)</b></label>
+    <label><b>Moles, n (mol)</b></label>
     <input id="n" type="number" step="any">
     <br><br>
-    <label><b>Temperatura (K)</b></label>
+    <label><b>Temperatura, T (K)</b></label>
     <input id="T" type="number" step="any">
     <br><br>
-    <label><b>Volumen (m³)</b></label>
+    <label><b>Volumen, V (m³)</b></label>
     <input id="V" type="number" step="any">
     <br><br>
     <label><b>Unidad del resultado</b></label>
@@ -414,7 +387,7 @@ function virialPresion() {
         <option value="atm">atm</option>
     </select>
     <br><br>
-    <button onclick="resolverVirialPresion()">Calcular</button>
+    <button onclick="resolverVirialPresion()">Calcular Presión</button>
     <button onclick="virial()">← Volver</button>
     <br><br>
     <div id="resultado"></div>
@@ -428,7 +401,7 @@ function resolverVirialPresion() {
     let V = parseFloat(document.getElementById("V").value);
 
     if (isNaN(B) || isNaN(n) || isNaN(T) || isNaN(V)) {
-        alert("Ingrese todos los datos.");
+        alert("Por favor, ingrese todos los datos numéricos requeridos.");
         return;
     }
 
@@ -438,39 +411,40 @@ function resolverVirialPresion() {
 
     let unidad = document.getElementById("unidadResultado").value;
     let resultado = P;
-    if (unidad == "kPa") resultado /= 1000;
-    else if (unidad == "MPa") resultado /= 1000000;
-    else if (unidad == "bar") resultado /= 100000;
-    else if (unidad == "atm") resultado /= 101325;
+    if (unidad === "kPa") resultado /= 1000;
+    else if (unidad === "MPa") resultado /= 1000000;
+    else if (unidad === "bar") resultado /= 100000;
+    else if (unidad === "atm") resultado /= 101325;
 
     document.getElementById("resultado").innerHTML = `
     <hr>
     <h2>Resultado</h2>
     <hr>
-    <p>Volumen molar = ${Vm.toFixed(6)} m³/mol</p>
-    <p>Z = ${Z.toFixed(4)}</p>
+    <p>Volumen molar (Vm): ${Vm.toFixed(6)} m³/mol</p>
+    <p>Factor de compresibilidad (Z): ${Z.toFixed(5)}</p>
     <hr>
     <h2>P = ${resultado.toFixed(4)} ${unidad}</h2>
     `;
 }
 
+// --- VIRIAL: TEMPERATURA ---
 function virialTemperatura() {
     contenido.innerHTML = `
-    <h2>🌡 Temperatura mediante Virial</h2>
+    <h2>🌡 Temperatura (Virial Truncada)</h2>
     <hr>
     <label><b>Coeficiente Virial B (m³/mol)</b></label>
     <input id="B" type="number" step="any">
     <br><br>
-    <label><b>Presión (Pa)</b></label>
+    <label><b>Presión, P (Pa)</b></label>
     <input id="P" type="number" step="any">
     <br><br>
-    <label><b>Volumen (m³)</b></label>
+    <label><b>Volumen, V (m³)</b></label>
     <input id="V" type="number" step="any">
     <br><br>
-    <label><b>Moles (mol)</b></label>
+    <label><b>Moles, n (mol)</b></label>
     <input id="n" type="number" step="any">
     <br><br>
-    <button onclick="resolverVirialTemperatura()">Calcular</button>
+    <button onclick="resolverVirialTemperatura()">Calcular Temperatura</button>
     <button onclick="virial()">← Volver</button>
     <br><br>
     <div id="resultado"></div>
@@ -484,7 +458,7 @@ function resolverVirialTemperatura() {
     let n = parseFloat(document.getElementById("n").value);
 
     if (isNaN(B) || isNaN(P) || isNaN(V) || isNaN(n)) {
-        alert("Ingrese todos los datos.");
+        alert("Por favor, ingrese todos los datos numéricos requeridos.");
         return;
     }
 
@@ -496,34 +470,35 @@ function resolverVirialTemperatura() {
     <hr>
     <h2>Resultado</h2>
     <hr>
-    <p>Volumen molar = ${Vm.toFixed(6)} m³/mol</p>
-    <p>Z = ${Z.toFixed(4)}</p>
+    <p>Volumen molar (Vm): ${Vm.toFixed(6)} m³/mol</p>
+    <p>Factor de compresibilidad (Z): ${Z.toFixed(5)}</p>
     <hr>
-    <h2>T = ${T.toFixed(2)} K</h2>
-    <h2>T = ${(T - 273.15).toFixed(2)} °C</h2>
+    <h2>T = ${T.toFixed(3)} K</h2>
+    <h2>T = ${(T - 273.15).toFixed(3)} °C</h2>
     `;
 }
 
+// --- VIRIAL: VALIDACIÓN ---
 function virialValidacion() {
     contenido.innerHTML = `
-    <h2>✔ Validación de la Ecuación Virial</h2>
+    <h2>✔ Validación Ecuación Virial</h2>
     <hr>
     <label><b>Coeficiente Virial B (m³/mol)</b></label>
     <input id="B" type="number" step="any">
     <br><br>
-    <label><b>Presión (Pa)</b></label>
+    <label><b>Presión, P (Pa)</b></label>
     <input id="P" type="number" step="any">
     <br><br>
-    <label><b>Volumen (m³)</b></label>
+    <label><b>Volumen, V (m³)</b></label>
     <input id="V" type="number" step="any">
     <br><br>
-    <label><b>Moles (mol)</b></label>
+    <label><b>Moles, n (mol)</b></label>
     <input id="n" type="number" step="any">
     <br><br>
-    <label><b>Temperatura (K)</b></label>
+    <label><b>Temperatura, T (K)</b></label>
     <input id="T" type="number" step="any">
     <br><br>
-    <button onclick="resolverVirialValidacion()">Validar</button>
+    <button onclick="resolverVirialValidacion()">Validar Ecuación</button>
     <button onclick="virial()">← Volver</button>
     <br><br>
     <div id="resultado"></div>
@@ -538,7 +513,7 @@ function resolverVirialValidacion() {
     let T = parseFloat(document.getElementById("T").value);
 
     if (isNaN(B) || isNaN(P) || isNaN(V) || isNaN(n) || isNaN(T)) {
-        alert("Ingrese todos los datos.");
+        alert("Por favor, ingrese todos los datos numéricos requeridos.");
         return;
     }
 
@@ -548,16 +523,17 @@ function resolverVirialValidacion() {
     let derecha = Z * n * CONSTANTES.R.J * T;
     let error = Math.abs(izquierda - derecha) / derecha * 100;
 
-    let mensaje = error < 0.01 ? "✅ La ecuación se satisface correctamente." : "⚠ Existe diferencia entre ambos lados.";
+    let mensaje = error < 0.01 ? "✅ Ecuación Virial validada correctamente." : "⚠ Existe diferencia entre ambos lados.";
 
     document.getElementById("resultado").innerHTML = `
     <hr>
     <h2>Validación</h2>
     <hr>
-    <p>Lado izquierdo (PV) = ${izquierda.toFixed(2)}</p>
-    <p>Lado derecho (ZnRT) = ${derecha.toFixed(2)}</p>
-    <p>Error = ${error.toFixed(4)} %</p>
+    <p>Z calculado = ${Z.toFixed(5)}</p>
+    <p>Lado izquierdo (PV) = ${izquierda.toFixed(2)} J</p>
+    <p>Lado derecho (ZnRT) = ${derecha.toFixed(2)} J</p>
     <hr>
-    <h3>${mensaje}</h3>
+    <p>Error Porcentual = <b>${error.toFixed(4)} %</b></p>
+    <p>${mensaje}</p>
     `;
 }
